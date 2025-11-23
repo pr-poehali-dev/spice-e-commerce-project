@@ -1,90 +1,19 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import Icon from '@/components/ui/icon';
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  weight: string;
-  category: string;
-  image: string;
-  description: string;
-  origin: string;
-}
+import { products, Product } from '@/data/products';
 
 interface CartItem extends Product {
   quantity: number;
 }
 
-const products: Product[] = [
-  {
-    id: 1,
-    name: 'Шафран Premium',
-    price: 2500,
-    weight: '5г',
-    category: 'spices',
-    image: 'https://images.unsplash.com/photo-1596040033229-a0b55ee2a6dc?w=800&auto=format&fit=crop',
-    description: 'Красные нити шафрана высшей категории из Ирана',
-    origin: 'Иран'
-  },
-  {
-    id: 2,
-    name: 'Кардамон зелёный',
-    price: 890,
-    weight: '50г',
-    category: 'spices',
-    image: 'https://images.unsplash.com/photo-1599909533554-f2504ab88e8e?w=800&auto=format&fit=crop',
-    description: 'Целые стручки зелёного кардамона с горных плантаций',
-    origin: 'Индия'
-  },
-  {
-    id: 3,
-    name: 'Китайский Пуэр',
-    price: 1200,
-    weight: '100г',
-    category: 'tea',
-    image: 'https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?w=800&auto=format&fit=crop',
-    description: 'Выдержанный чай с глубоким земляным вкусом',
-    origin: 'Китай'
-  },
-  {
-    id: 4,
-    name: 'Улун молочный',
-    price: 950,
-    weight: '100г',
-    category: 'tea',
-    image: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?w=800&auto=format&fit=crop',
-    description: 'Классический чай с нежным сливочным ароматом',
-    origin: 'Тайвань'
-  },
-  {
-    id: 5,
-    name: 'Звёздчатый анис',
-    price: 450,
-    weight: '50г',
-    category: 'spices',
-    image: 'https://images.unsplash.com/photo-1599909533625-46bbf39df127?w=800&auto=format&fit=crop',
-    description: 'Целые звёздочки аниса для сладких и пряных блюд',
-    origin: 'Вьетнам'
-  },
-  {
-    id: 6,
-    name: 'Подарочный набор «Восток»',
-    price: 3500,
-    weight: '300г',
-    category: 'gift',
-    image: 'https://images.unsplash.com/photo-1607982920134-4b5f7e36a8d3?w=800&auto=format&fit=crop',
-    description: 'Эксклюзивная коллекция специй в деревянной шкатулке',
-    origin: 'Микс'
-  }
-];
-
 export default function Index() {
+  const navigate = useNavigate();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
@@ -138,9 +67,9 @@ export default function Index() {
             <a href="#about" className="text-foreground hover:text-primary transition-colors font-medium">
               О нас
             </a>
-            <a href="#blog" className="text-foreground hover:text-primary transition-colors font-medium">
+            <button onClick={() => navigate('/blog')} className="text-foreground hover:text-primary transition-colors font-medium">
               Блог
-            </a>
+            </button>
             <a href="#contacts" className="text-foreground hover:text-primary transition-colors font-medium">
               Контакты
             </a>
@@ -226,7 +155,7 @@ export default function Index() {
                         <span>Итого:</span>
                         <span className="text-primary">{cartTotal} ₽</span>
                       </div>
-                      <Button className="w-full" size="lg">
+                      <Button className="w-full" size="lg" onClick={() => navigate('/checkout')}>
                         Оформить заказ
                       </Button>
                     </div>
@@ -340,7 +269,7 @@ export default function Index() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredProducts.map(product => (
-              <Card key={product.id} className="overflow-hidden group hover:shadow-xl transition-all animate-scale-in">
+              <Card key={product.id} className="overflow-hidden group hover:shadow-xl transition-all animate-scale-in cursor-pointer" onClick={() => navigate(`/product/${product.id}`)}>
                 <div className="relative h-64 overflow-hidden">
                   <img
                     src={product.image}
@@ -357,7 +286,7 @@ export default function Index() {
                       <p className="text-2xl font-bold text-primary">{product.price} ₽</p>
                       <p className="text-sm text-muted-foreground">{product.weight}</p>
                     </div>
-                    <Button onClick={() => addToCart(product)}>
+                    <Button onClick={(e) => { e.stopPropagation(); addToCart(product); }}>
                       <Icon name="ShoppingCart" size={18} className="mr-2" />
                       В корзину
                     </Button>
